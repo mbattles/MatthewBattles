@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+
+<title>metaLAB Chapter Viewer</title>
+
+<style>
+body, html {
+	box-sizing: border-box;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	margin: 0px;
+	padding: 0px;
+	cursor: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	background-color: #000000;
+}
+div {
+	position: relative;
+	float: left;
+	width: 33.333%;
+	height: 33.333%;
+	z-index: 3;
+	background-color: #000000;
+}
+#cover {
+	display: block;
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 0;
+	width: 100%;
+	height: 100%;
+}
+</style>
+
+</head>
+
+<body>
+
+<span id="cover"></span>
+
+<div></div>
+<div></div>
+<div></div>
+
+<div></div>
+<div></div>
+<div></div>
+
+<div></div>
+<div></div>
+<div></div>
+
+<script>
+
+// add a new [] for each chapter
+// add "" for empty divs
+var gifLibrary = [
+	["card1.jpg", "FCClip1.gif", "FCClip2.gif", "FCClip3.gif"],
+	["card4.jpg", "FCClip4.gif", "FCClip5.gif", "FCClip6.gif", "IMG_6916.gif"],
+	["card7.jpg", "FCClip7.gif", "FCClip8.gif", "FCClip9.gif"]];
+
+var coverGIF = "FCClip9.gif";
+
+
+
+
+// change these two to adjust timings (in seconds)
+var turnoverSpread = 15;
+var chapterLength = 30;
+
+
+
+
+
+var page;
+var chapter;
+
+var pageTurning;
+
+var divs;
+var divTurnover = [];
+
+
+
+setup();
+
+function setup() {
+	chapter = 0;
+
+	preload(gifLibrary);
+
+	divs = document.getElementsByTagName("div");
+
+	setGIF(document.getElementById("cover"), coverGIF);
+	
+	nextChapter();
+}
+
+function preload(library) {
+	var img;
+	for (var i = 0; i < library.length; i++) {
+		for (var j = 0; j < library[i].length; j++) {
+			img = document.createElement("img");
+			img.src = library[i][j];
+		}
+	}
+}
+
+function nextChapter() {
+	clearInterval(pageTurning);
+	if (chapter < gifLibrary.length) {
+		for (var i = 0; i < divs.length; i++) {
+			divTurnover[i] = Math.floor(Math.random()*turnoverSpread);
+		}
+
+		page = 0;
+		chapter++;
+		pageTurning = setInterval(nextPage, 1000);
+	} else {
+		finishBook();
+	}
+}
+
+function nextPage() {
+	if (page < chapterLength) {
+		for (var i = 0; i < divs.length; i++) {
+			if (divTurnover[i] == page) {
+				setGIF(divs[i], gifLibrary[chapter - 1][Math.floor(Math.random()*gifLibrary[chapter - 1].length)]);
+			}
+		}
+		page++;
+	} else {
+		nextChapter();
+	}
+}
+
+function nextCoverPage() {
+	if (page < chapterLength) {
+		for (var i = 0; i < divs.length; i++) {
+			if (divTurnover[i] == page) {
+				unsetGIF(divs[i]);
+			}
+		}
+		page++;
+	} else {
+		nextChapter();
+	}
+}
+
+function finishBook() {
+	chapter = 0;
+	page = 0;
+	for (var i = 0; i < divs.length; i++) {
+		divTurnover[i] = Math.floor(Math.random()*turnoverSpread);
+	}
+	nextCoverPage();
+	pageTurning = setInterval(nextCoverPage, 1000);
+}
+
+function setGIF(div, gif) {
+	div.style.background = "#000000 url(\"" + gif + "\") no-repeat center center/cover";
+}
+
+function unsetGIF(div) {
+	div.style.background = "transparent";
+}
+
+</script>
+</body>
+</html>
